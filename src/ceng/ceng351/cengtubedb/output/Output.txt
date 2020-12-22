@@ -60,12 +60,16 @@ Pranking my son	Richard	Nice video :)
 --------------------------------------------------------------
 *** Find the oldest published video for a given userID which doesn’t contain ”VLOG” in its title ***
 videoTitle	userName	datePublished
+Bye CengTube	Cindy	2019-02-10
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 *** List the trending top three videos for a given time interval ***
 videoTitle	userName	numOfWatch
+Mert'in basari oykusu	Mert	5
+Jacks VLOG (Best VLOG ever!!!)	Jack	4
+Why do you hate my VLOGs	Jack	4
 
 --------------------------------------------------------------
 
@@ -85,9 +89,9 @@ userID	userName	numOfVideosWatched
 --------------------------------------------------------------
 *** List users who have watched and commented all of their own videos ***
 userID	userName	email
-Exception occurred: 
-
-java.lang.NullPointerException
+1	Jack	jack@ceng.metu.edu.tr
+3	Tom	tom@gmail.com
+5	Sarah	sarah@gmail.com
 
 --------------------------------------------------------------
 
@@ -103,7 +107,7 @@ userID	userName	email
 
 --------------------------------------------------------------
 *** Update the users’ status to ”verified” if the view count of all their videos in total is more than the given number ***
-Number of updated rows 0
+Number of updated rows 2
 
 --------------------------------------------------------------
 
@@ -121,6 +125,6 @@ Number of rows after delete 1
 
 --------------------------------------------------------------
 *** Drop tables ***
-Dropped 0 tables.
+Dropped 4 tables.
 
 --------------------------------------------------------------

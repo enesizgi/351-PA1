@@ -58,7 +58,8 @@ public class CengTubeDB implements ICengTubeDB{
                 "datePublished DATE, " +
                 "FOREIGN KEY (userID) " +
                     "REFERENCES User(userID) " +
-                    "ON DELETE CASCADE, " +
+                    "ON DELETE CASCADE " +
+                    "ON UPDATE CASCADE, " +
                 "PRIMARY KEY (videoID));";
 
         try {
@@ -79,10 +80,12 @@ public class CengTubeDB implements ICengTubeDB{
                 "dateCommented DATE, " +
                 "FOREIGN KEY (userID) " +
                     "REFERENCES User(userID) " +
-                    "ON DELETE SET NULL, " +
+                    "ON DELETE SET NULL " +
+                    "ON UPDATE CASCADE, " +
                 "FOREIGN KEY (videoID) " +
                     "REFERENCES Video(videoID) " +
-                    "ON DELETE CASCADE, " +
+                    "ON DELETE CASCADE " +
+                    "ON UPDATE CASCADE, " +
                 "PRIMARY KEY (commentID));";
 
         try {
@@ -101,10 +104,12 @@ public class CengTubeDB implements ICengTubeDB{
                 "dateWatched DATE, " +
                 "FOREIGN KEY (userID) " +
                     "REFERENCES User(userID) " +
-                    "ON DELETE CASCADE, " +
+                "ON DELETE CASCADE " +
+                "ON UPDATE CASCADE, " +
                 "FOREIGN KEY (videoID) " +
                     "REFERENCES Video(videoID) " +
-                    "ON DELETE CASCADE , " +
+                "ON DELETE CASCADE  " +
+                "ON UPDATE CASCADE , " +
                 "PRIMARY KEY (userID,videoID));";
 
         try {
@@ -123,7 +128,7 @@ public class CengTubeDB implements ICengTubeDB{
     @Override
     public int dropTables() {
         int temp = 0;
-        /*
+
         String[] str = new String[4];
         str[0] = "User";
         str[1] = "Video";
@@ -142,7 +147,7 @@ public class CengTubeDB implements ICengTubeDB{
                 e.printStackTrace();
             }
         }
-*/
+
         try {
             con.close();
         } catch (SQLException e) {
@@ -511,35 +516,20 @@ public class CengTubeDB implements ICengTubeDB{
     }
 
     @Override
-    public int question10(int givenViewCount) {/*
+    public int question10(int givenViewCount) {
+        int temp = 0;
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("UPDATE User U1 SET status=\"verified\" WHERE %d <= ALL (SELECT SUM(SELECT COUNT(*) FROM Watch W1 WHERE W1.userID = V1.userID) FROM Video V1 WHERE V1.userID = U1.userID) ",givenViewCount);
-            statement.executeUpdate(sql);/*
-            ArrayList<String> arr1 = new ArrayList<String>();
-            ArrayList<Integer> arr2 = new ArrayList<Integer>();
-            ArrayList<Integer> arr3 = new ArrayList<Integer>();
-
-            while(rs.next()) {
-                arr1.add(rs.getString("videoTitle"));
-                arr2.add(rs.getInt("likeCount"));
-                arr3.add(rs.getInt("dislikeCount"));
-            }
-
-
-            tmp = new QueryResult.VideoTitleLikeCountDislikeCountResult[arr1.size()];
-
-            for (int i = 0;i<arr1.size();i++) {
-                tmp[i] = new QueryResult.VideoTitleLikeCountDislikeCountResult(arr1.get(i),arr2.get(i),arr3.get(i));
-            }
+            String sql = String.format("UPDATE User U1 SET status=\"verified\" WHERE userID IN (SELECT U3.userID FROM (SELECT U2.userID, SUM(U2.C) AS S FROM (SELECT U.userID,(SELECT COUNT(*) FROM Watch W WHERE W.videoID = V.videoID) AS C FROM User U, Video V WHERE U.userID = V.userID) U2 GROUP BY userID) U3 WHERE U3.S > %d) ",givenViewCount);
+            temp = statement.executeUpdate(sql);
 
             statement.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }*/
-        return 0;
+        }
+        return temp;
     }
 
     @Override
