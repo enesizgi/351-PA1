@@ -162,21 +162,22 @@ public class CengTubeDB implements ICengTubeDB{
     public int insertUser(User[] users){
         int temp = 0;
 
-        for (int i = 0;i<users.length;i++) {
+        for (User user : users) {
 
             try {
-            Statement statement = this.con.createStatement();
+                String sql = "INSERT INTO User VALUES (?,?,?,?,?);";
 
-            String sql = String.format("INSERT INTO User VALUES (\"%d\",\"%s\",\"%s\",\"%s\",\"%s\");",
-                    users[i].getUserID(),
-                    users[i].getUserName(),
-                    users[i].getEmail(),
-                    users[i].getPassword(),
-                    users[i].getStatus());
 
-            statement.executeUpdate(sql);
-            temp++;
-            statement.close();
+                PreparedStatement stat = con.prepareStatement(sql);
+                stat.setInt(1, user.getUserID());
+                stat.setString(2, user.getUserName());
+                stat.setString(3, user.getEmail());
+                stat.setString(4, user.getPassword());
+                stat.setString(5, user.getStatus());
+
+                stat.executeUpdate();
+                temp++;
+                stat.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -189,22 +190,24 @@ public class CengTubeDB implements ICengTubeDB{
     public int insertVideo(Video[] videos) {
         int temp = 0;
 
-        for (int i = 0;i<videos.length;i++) {
+        for (Video video : videos) {
 
             try {
-                Statement statement = this.con.createStatement();
 
-                String sql = String.format("INSERT INTO Video VALUES (\"%d\",\"%d\",\"%s\",\"%d\",\"%d\",\"%s\");",
-                        videos[i].getVideoID(),
-                        videos[i].getUserID(),
-                        videos[i].getVideoTitle(),
-                        videos[i].getLikeCount(),
-                        videos[i].getDislikeCount(),
-                        videos[i].getDatePublished());
+                String sql = "INSERT INTO Video VALUES (?,?,?,?,?,?);";
 
-                statement.executeUpdate(sql);
+
+                PreparedStatement stat = con.prepareStatement(sql);
+                stat.setInt(1, video.getVideoID());
+                stat.setInt(2, video.getUserID());
+                stat.setString(3, video.getVideoTitle());
+                stat.setInt(4, video.getLikeCount());
+                stat.setInt(5, video.getDislikeCount());
+                stat.setString(6, video.getDatePublished());
+
+                stat.executeUpdate();
                 temp++;
-                statement.close();
+                stat.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -217,21 +220,21 @@ public class CengTubeDB implements ICengTubeDB{
     public int insertComment(Comment[] comments) {
         int temp = 0;
 
-        for (int i = 0;i<comments.length;i++) {
+        for (Comment comment : comments) {
 
             try {
-                Statement statement = this.con.createStatement();
+                String sql = "INSERT INTO Comment VALUES (?,?,?,?,?);";
 
-                String sql = String.format("INSERT INTO Comment VALUES (\"%d\",\"%d\",\"%d\",\"%s\",\"%s\");",
-                        comments[i].getCommentID(),
-                        comments[i].getUserID(),
-                        comments[i].getVideoID(),
-                        comments[i].getCommentText(),
-                        comments[i].getDateCommented());
+                PreparedStatement stat = con.prepareStatement(sql);
+                stat.setInt(1, comment.getCommentID());
+                stat.setInt(2, comment.getUserID());
+                stat.setInt(3, comment.getVideoID());
+                stat.setString(4, comment.getCommentText());
+                stat.setString(5, comment.getDateCommented());
 
-                statement.executeUpdate(sql);
+                stat.executeUpdate();
                 temp++;
-                statement.close();
+                stat.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -244,18 +247,18 @@ public class CengTubeDB implements ICengTubeDB{
     public int insertWatch(Watch[] watchEntries) {
         int temp = 0;
 
-        for (int i = 0;i<watchEntries.length;i++) {
+        for (Watch watchEntry : watchEntries) {
             try {
-                Statement statement = this.con.createStatement();
+                String sql = "INSERT INTO Watch VALUES (?,?,?);";
 
-                String sql = String.format("INSERT INTO Watch VALUES (\"%d\",\"%d\",\"%s\");",
-                        watchEntries[i].getUserID(),
-                        watchEntries[i].getVideoID(),
-                        watchEntries[i].getDateWatched());
+                PreparedStatement stat = con.prepareStatement(sql);
+                stat.setInt(1, watchEntry.getUserID());
+                stat.setInt(2, watchEntry.getVideoID());
+                stat.setString(3, watchEntry.getDateWatched());
 
-                statement.executeUpdate(sql);
+                stat.executeUpdate();
                 temp++;
-                statement.close();
+                stat.close();
 
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -270,8 +273,8 @@ public class CengTubeDB implements ICengTubeDB{
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("SELECT videoTitle,likeCount,dislikeCount FROM Video V " +
-                    "WHERE V.likeCount>V.dislikeCount ORDER BY V.videoTitle ASC");
+            String sql = "SELECT videoTitle,likeCount,dislikeCount FROM Video V " +
+                    "WHERE V.likeCount>V.dislikeCount ORDER BY V.videoTitle ASC";
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<String> arr1 = new ArrayList<String>();
             ArrayList<Integer> arr2 = new ArrayList<Integer>();
@@ -338,15 +341,20 @@ public class CengTubeDB implements ICengTubeDB{
     public QueryResult.VideoTitleUserNameDatePublishedResult[] question5(Integer userID) {
         QueryResult.VideoTitleUserNameDatePublishedResult[] tmp = null;
         try {
-            Statement statement = this.con.createStatement();
-
-            String sql = String.format("SELECT V2.videoTitle, U1.userName, V2.datePublished " +
-                    "FROM User U1, Video V2 WHERE V2.userID = %d AND U1.userID = %d " +
+            String sql = "SELECT V2.videoTitle, U1.userName, V2.datePublished " +
+                    "FROM User U1, Video V2 WHERE V2.userID = ? AND U1.userID = ? " +
                     "AND V2.datePublished IN (SELECT MIN(V1.datePublished) " +
-                    "FROM Video V1 WHERE V1.userID = %d AND V1.videoTitle NOT LIKE \"%%VLOG%%\") " +
-                    "ORDER BY V2.videoTitle ASC;",userID,userID,userID);
+                    "FROM Video V1 WHERE V1.userID = ? AND V1.videoTitle NOT LIKE ?) " +
+                    "ORDER BY V2.videoTitle ASC;";
 
-            ResultSet rs = statement.executeQuery(sql);
+            PreparedStatement stat = con.prepareStatement(sql);
+            stat.setInt(1,userID);
+            stat.setInt(2,userID);
+            stat.setInt(3,userID);
+            stat.setString(4,"%VLOG%");
+
+
+            ResultSet rs = stat.executeQuery();
             ArrayList<String> arr1 = new ArrayList<String>();
             ArrayList<String> arr2 = new ArrayList<String>();
             ArrayList<String> arr3 = new ArrayList<String>();
@@ -364,7 +372,7 @@ public class CengTubeDB implements ICengTubeDB{
                 tmp[i] = new QueryResult.VideoTitleUserNameDatePublishedResult(arr1.get(i),arr2.get(i),arr3.get(i));
             }
 
-            statement.close();
+            stat.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -376,15 +384,17 @@ public class CengTubeDB implements ICengTubeDB{
     public QueryResult.VideoTitleUserNameNumOfWatchResult[] question6(String dateStart, String dateEnd) {
         QueryResult.VideoTitleUserNameNumOfWatchResult[] tmp = null;
         try {
-            Statement statement = this.con.createStatement();
-
-            String sql = String.format("SELECT V.videoTitle,U.userName,C.count FROM Video V, User U, " +
-                    "(SELECT W.videoID, COUNT(*) AS count FROM Watch W WHERE W.dateWatched >= '%s' " +
-                    "AND W.dateWatched <= '%s' GROUP BY W.videoID ORDER BY count DESC LIMIT 3) C " +
+            String sql = "SELECT V.videoTitle,U.userName,C.count FROM Video V, User U, " +
+                    "(SELECT W.videoID, COUNT(*) AS count FROM Watch W WHERE W.dateWatched >= ? " +
+                    "AND W.dateWatched <= ? GROUP BY W.videoID ORDER BY count DESC LIMIT 3) C " +
                     "WHERE V.userID = U.userID AND V.videoID = C.videoID " +
-                    "ORDER BY C.count DESC;",dateStart,dateEnd);
+                    "ORDER BY C.count DESC;";
 
-            ResultSet rs = statement.executeQuery(sql);
+            PreparedStatement stat = con.prepareStatement(sql);
+            stat.setString(1,dateStart);
+            stat.setString(2,dateEnd);
+
+            ResultSet rs = stat.executeQuery();
             ArrayList<String> arr1 = new ArrayList<String>();
             ArrayList<String> arr2 = new ArrayList<String>();
             ArrayList<Integer> arr3 = new ArrayList<Integer>();
@@ -402,7 +412,7 @@ public class CengTubeDB implements ICengTubeDB{
                 tmp[i] = new QueryResult.VideoTitleUserNameNumOfWatchResult(arr1.get(i),arr2.get(i),arr3.get(i));
             }
 
-            statement.close();
+            stat.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -493,10 +503,10 @@ public class CengTubeDB implements ICengTubeDB{
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("SELECT userID,userName,email FROM User U " +
+            String sql = "SELECT userID,userName,email FROM User U " +
                     "WHERE U.userID IN (SELECT userID FROM Watch W WHERE W.userID = U.userID) " +
                     "AND U.userID NOT IN (SELECT userID FROM Comment C " +
-                    "WHERE C.userID = U.userID) ORDER BY U.userID ASC;");
+                    "WHERE C.userID = U.userID) ORDER BY U.userID ASC;";
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<Integer> arr1 = new ArrayList<Integer>();
             ArrayList<String> arr2 = new ArrayList<String>();
@@ -529,7 +539,12 @@ public class CengTubeDB implements ICengTubeDB{
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("UPDATE User U1 SET status=\"verified\" WHERE userID IN (SELECT U3.userID FROM (SELECT U2.userID, SUM(U2.C) AS S FROM (SELECT U.userID,(SELECT COUNT(*) FROM Watch W WHERE W.videoID = V.videoID) AS C FROM User U, Video V WHERE U.userID = V.userID) U2 GROUP BY userID) U3 WHERE U3.S > %d) ",givenViewCount);
+            String sql = String.format("UPDATE User U1 SET status=\"verified\" WHERE userID IN " +
+                    "(SELECT U3.userID FROM (SELECT U2.userID, SUM(U2.C) AS S FROM " +
+                    "(SELECT U.userID,(SELECT COUNT(*) FROM Watch W WHERE W.videoID = V.videoID) AS C " +
+                    "FROM User U, Video V WHERE U.userID = V.userID) U2 GROUP BY userID) U3 " +
+                    "WHERE U3.S > %d) ",givenViewCount);
+
             temp = statement.executeUpdate(sql);
 
             statement.close();
@@ -546,7 +561,7 @@ public class CengTubeDB implements ICengTubeDB{
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("UPDATE Video SET videoTitle =\"%s\" WHERE videoID =%d ;",newTitle,videoID);
+            String sql = "UPDATE Video SET videoTitle =\""+newTitle+"\" WHERE videoID ="+videoID.toString()+" ;";
 
             temp = statement.executeUpdate(sql);
             statement.close();
@@ -561,22 +576,25 @@ public class CengTubeDB implements ICengTubeDB{
     public int question12(String videoTitle) {
         int temp = 0;
         try {
-            Statement statement = this.con.createStatement();
+            String sql = "DELETE FROM Video WHERE videoTitle=? ;";
 
-            String sql = String.format("DELETE FROM Video WHERE videoTitle=\"%s\" ;",videoTitle);
+            PreparedStatement stat = con.prepareStatement(sql);
+            stat.setString(1, videoTitle);
 
-            statement.executeUpdate(sql);
+            stat.execute();
 
             sql = "SELECT COUNT(*) AS count FROM Video";
 
             ResultSet rs;
-            rs = statement.executeQuery(sql);
+            stat.close();
+            stat = con.prepareStatement(sql);
+            rs = stat.executeQuery();
 
             if (rs.next()) {
                 temp = rs.getInt("count");
             }
 
-            statement.close();
+            stat.close();
 
         } catch (SQLException e) {
             e.printStackTrace();
