@@ -244,7 +244,6 @@ public class CengTubeDB implements ICengTubeDB{
         int temp = 0;
 
         for (int i = 0;i<watchEntries.length;i++) {
-
             try {
                 Statement statement = this.con.createStatement();
 
@@ -540,8 +539,7 @@ public class CengTubeDB implements ICengTubeDB{
 
             String sql = String.format("UPDATE Video SET videoTitle =\"%s\" WHERE videoID =%d ;",newTitle,videoID);
 
-            statement.executeUpdate(sql);
-            temp++;
+            temp = statement.executeUpdate(sql);
             statement.close();
 
         } catch (SQLException e) {
@@ -558,8 +556,7 @@ public class CengTubeDB implements ICengTubeDB{
 
             String sql = String.format("DELETE FROM Video WHERE videoTitle=\"%s\" ;",videoTitle);
 
-            statement.executeUpdate(sql);
-            temp++;
+            temp = statement.executeUpdate(sql);
             statement.close();
 
         } catch (SQLException e) {
