@@ -7,25 +7,25 @@ Created 4 tables.
 
 --------------------------------------------------------------
 *** Insert into User ***
-0 users are inserted.
+7 users are inserted.
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 *** Insert into Video ***
-1 video are inserted.
+19 video are inserted.
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 *** Insert into Comment ***
-0 comments are inserted.
+10 comments are inserted.
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 *** Insert into Watch ***
-2 watch entries are inserted.
+43 watch entries are inserted.
 
 --------------------------------------------------------------
 
@@ -38,12 +38,12 @@ Mert vs Others (1v5)	192	3
 Mert'in basari oykusu	200	10
 Mert'le bir gun (VLOG)	204	3
 Mike vs Car	300	2
+Mike vs Truck	400	10
 Pranking my son	194	40
 Pranking my wife	200	9
 SuperMike	200	10
 They pranked me this time	400	10
 Top Challanges	100	10
-When Pulp Fiction Isn't Home (Oven Kid)	400	10
 
 --------------------------------------------------------------
 
@@ -121,6 +121,6 @@ Number of rows after delete 1
 
 --------------------------------------------------------------
 *** Drop tables ***
-Dropped 4 tables.
+Dropped 0 tables.
 
 --------------------------------------------------------------

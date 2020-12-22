@@ -438,16 +438,17 @@ public class CengTubeDB implements ICengTubeDB{
     }
 
      @Override
-    public QueryResult.UserIDUserNameEmailResult[]  question8() {/*
+    public QueryResult.UserIDUserNameEmailResult[]  question8() {
          QueryResult.UserIDUserNameEmailResult[] tmp = null;
          try {
              Statement statement = this.con.createStatement();
 
-             String sql = String.format("SELECT DISTINCT U.userID,U.userName,U.email FROM User U " +
-                     "WHERE NOT EXISTS (SELECT V.videoID FROM Video V WHERE NOT EXISTS " +
-                     "(SELECT W.videoID FROM Watch W WHERE W.videoID = V.videoID AND W.userID = U.userID)) " +
-                     " " +
-                     "ORDER BY U.userID ASC");
+             String sql = "SELECT U2.userID,U2.userName,U2.email FROM User U2 WHERE U2.userID NOT IN " +
+                     "(SELECT U.userID FROM User U, Video V WHERE U.userID = V.userID AND V.videoID NOT IN " +
+                     "(SELECT W.videoID FROM Watch W WHERE W.userID = U.userID)) AND U2.userID IN " +
+                     "(SELECT U3.userID FROM User U3 WHERE U3.userID NOT IN " +
+                     "(SELECT U1.userID FROM User U1, Video V1 WHERE U1.userID = V1.userID AND U1.userID NOT IN " +
+                     "(SELECT C.userID FROM Comment C WHERE C.userID = U1.userID AND C.videoID = V1.videoID)));";
              ResultSet rs = statement.executeQuery(sql);
              ArrayList<Integer> arr1 = new ArrayList<Integer>();
              ArrayList<String> arr2 = new ArrayList<String>();
@@ -470,8 +471,8 @@ public class CengTubeDB implements ICengTubeDB{
 
          } catch (SQLException e) {
              e.printStackTrace();
-         }*/
-         return null;
+         }
+         return tmp;
     }
 
     @Override
