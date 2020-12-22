@@ -51,9 +51,9 @@ Top Challanges	100	10
 *** List the videos commented by the given userID ***
 videoTitle	userName	commentText
 I will not make any more VLOGs	Richard	This video is really bad
-Top Challanges	Richard	Nice video :)
-Pranking my wife	Richard	Nice video :)
 Pranking my son	Richard	Nice video :)
+Pranking my wife	Richard	Nice video :)
+Top Challanges	Richard	Nice video :)
 
 --------------------------------------------------------------
 
@@ -68,21 +68,16 @@ Bye CengTube	Cindy	2019-02-10
 *** List the trending top three videos for a given time interval ***
 videoTitle	userName	numOfWatch
 Mert'in basari oykusu	Mert	5
+Jacks VLOG (Best VLOG ever!!!)	Jack	4
 Why do you hate my VLOGs	Jack	4
-I will not make any more VLOGs	Jack	4
 
 --------------------------------------------------------------
 
 --------------------------------------------------------------
 *** List users and number of videos watched only by her/him ***
 userID	userName	numOfVideosWatched
-1	Jack	5
-2	Mike	2
-3	Tom	7
-4	Mert	1
-5	Sarah	18
-6	Richard	6
-7	Cindy	4
+5	Sarah	4
+6	Richard	1
 
 --------------------------------------------------------------
 
@@ -91,7 +86,6 @@ userID	userName	numOfVideosWatched
 userID	userName	email
 1	Jack	jack@ceng.metu.edu.tr
 3	Tom	tom@gmail.com
-5	Sarah	sarah@gmail.com
 
 --------------------------------------------------------------
 
@@ -119,7 +113,7 @@ Number of updated rows 1
 
 --------------------------------------------------------------
 *** Delete the video(s) with the given video name  ***
-Number of rows after delete 1
+Number of rows after delete 18
 
 --------------------------------------------------------------
 

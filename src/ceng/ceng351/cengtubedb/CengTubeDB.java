@@ -127,6 +127,7 @@ public class CengTubeDB implements ICengTubeDB{
 
     @Override
     public int dropTables() {
+
         int temp = 0;
 
         String[] str = new String[4];
@@ -306,7 +307,7 @@ public class CengTubeDB implements ICengTubeDB{
             String sql = String.format("SELECT U.userName,D.videoTitle,D.commentText FROM User U, " +
                     "(SELECT videoTitle,B.commentText FROM Video V, " +
                     "(SELECT videoID,commentText FROM Comment C WHERE C.userID = %d) B " +
-                    "WHERE V.videoID = B.videoID) D WHERE U.userID = %d;",userID,userID);
+                    "WHERE V.videoID = B.videoID) D WHERE U.userID = %d ORDER BY D.videoTitle ASC;",userID,userID);
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<String> arr1 = new ArrayList<String>();
             ArrayList<String> arr2 = new ArrayList<String>();
@@ -342,7 +343,8 @@ public class CengTubeDB implements ICengTubeDB{
             String sql = String.format("SELECT V2.videoTitle, U1.userName, V2.datePublished " +
                     "FROM User U1, Video V2 WHERE V2.userID = %d AND U1.userID = %d " +
                     "AND V2.datePublished IN (SELECT MIN(V1.datePublished) " +
-                    "FROM Video V1 WHERE V1.userID = %d AND V1.videoTitle NOT LIKE \"%%VLOG%%\");",userID,userID,userID);
+                    "FROM Video V1 WHERE V1.userID = %d AND V1.videoTitle NOT LIKE \"%%VLOG%%\") " +
+                    "ORDER BY V2.videoTitle ASC;",userID,userID,userID);
 
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<String> arr1 = new ArrayList<String>();
@@ -379,7 +381,8 @@ public class CengTubeDB implements ICengTubeDB{
             String sql = String.format("SELECT V.videoTitle,U.userName,C.count FROM Video V, User U, " +
                     "(SELECT W.videoID, COUNT(*) AS count FROM Watch W WHERE W.dateWatched >= '%s' " +
                     "AND W.dateWatched <= '%s' GROUP BY W.videoID ORDER BY count DESC LIMIT 3) C " +
-                    "WHERE V.userID = U.userID AND V.videoID = C.videoID;",dateStart,dateEnd);
+                    "WHERE V.userID = U.userID AND V.videoID = C.videoID " +
+                    "ORDER BY C.count DESC;",dateStart,dateEnd);
 
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<String> arr1 = new ArrayList<String>();
@@ -413,8 +416,12 @@ public class CengTubeDB implements ICengTubeDB{
         try {
             Statement statement = this.con.createStatement();
 
-            String sql = String.format("SELECT U.userID,U.userName,B.count FROM User U, " +
-                    "(SELECT userID, COUNT(*) AS count FROM Watch GROUP BY userID) B WHERE U.userID = B.userID ORDER BY U.userID ASC;");
+            String sql = "SELECT U.userID,U.userName,count FROM User U, " +
+                    "(SELECT W1.userID,COUNT(W1.userID) AS count FROM Watch W1 " +
+                    "WHERE W1.videoID IN (SELECT A.videoID FROM " +
+                    "(SELECT COUNT(W.videoID) AS count, W.videoID FROM Watch W GROUP BY W.videoID) A " +
+                    "WHERE A.count = 1) GROUP BY W1.userID) B " +
+                    "WHERE B.userID = U.userID ORDER BY U.userID ASC;";
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<Integer> arr1 = new ArrayList<Integer>();
             ArrayList<String> arr2 = new ArrayList<String>();
@@ -452,7 +459,8 @@ public class CengTubeDB implements ICengTubeDB{
                      "(SELECT W.videoID FROM Watch W WHERE W.userID = U.userID)) AND U2.userID IN " +
                      "(SELECT U3.userID FROM User U3 WHERE U3.userID NOT IN " +
                      "(SELECT U1.userID FROM User U1, Video V1 WHERE U1.userID = V1.userID AND U1.userID NOT IN " +
-                     "(SELECT C.userID FROM Comment C WHERE C.userID = U1.userID AND C.videoID = V1.videoID)));";
+                     "(SELECT C.userID FROM Comment C WHERE C.userID = U1.userID AND C.videoID = V1.videoID))) AND " +
+                     "U2.userID IN (SELECT DISTINCT V4.userID FROM Video V4) ORDER BY U2.userID ASC;";
              ResultSet rs = statement.executeQuery(sql);
              ArrayList<Integer> arr1 = new ArrayList<Integer>();
              ArrayList<String> arr2 = new ArrayList<String>();
@@ -487,7 +495,8 @@ public class CengTubeDB implements ICengTubeDB{
 
             String sql = String.format("SELECT userID,userName,email FROM User U " +
                     "WHERE U.userID IN (SELECT userID FROM Watch W WHERE W.userID = U.userID) " +
-                    "AND U.userID NOT IN (SELECT userID FROM Comment C WHERE C.userID = U.userID) ORDER BY U.userID ASC;");
+                    "AND U.userID NOT IN (SELECT userID FROM Comment C " +
+                    "WHERE C.userID = U.userID) ORDER BY U.userID ASC;");
             ResultSet rs = statement.executeQuery(sql);
             ArrayList<Integer> arr1 = new ArrayList<Integer>();
             ArrayList<String> arr2 = new ArrayList<String>();
@@ -556,7 +565,17 @@ public class CengTubeDB implements ICengTubeDB{
 
             String sql = String.format("DELETE FROM Video WHERE videoTitle=\"%s\" ;",videoTitle);
 
-            temp = statement.executeUpdate(sql);
+            statement.executeUpdate(sql);
+
+            sql = "SELECT COUNT(*) AS count FROM Video";
+
+            ResultSet rs;
+            rs = statement.executeQuery(sql);
+
+            if (rs.next()) {
+                temp = rs.getInt("count");
+            }
+
             statement.close();
 
         } catch (SQLException e) {
